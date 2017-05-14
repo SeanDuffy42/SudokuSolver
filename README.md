@@ -1,7 +1,7 @@
 # SudokuSolver
 This is a C# console app that solves Sudoku Puzzles
 
-# User Guide
+## User Guide
 This application will read in a text file which represents a Sudoku puzzle that has the following format and print the solution to the console.
 
 XXX15XX7X
