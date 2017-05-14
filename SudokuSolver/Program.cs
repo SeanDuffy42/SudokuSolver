@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Configuration;
 
 namespace SudokuSolverConsole
 {
@@ -18,7 +19,7 @@ namespace SudokuSolverConsole
 
             ISudokuSolver solver = (ISudokuSolver)container.Resolve(typeof(ISudokuSolver));
 
-            var fileName = "puzzle.txt";
+            var fileName = ConfigurationManager.AppSettings["defaultFileName"];
 
             if (args.Length > 1)
             {
@@ -31,7 +32,7 @@ namespace SudokuSolverConsole
             {
                 foreach (var col in row)
                 {
-                    if (col.Count() == 1)
+                    if (col.Count == 1)
                     {
                         Console.Write(col.Single());
                     }
@@ -43,8 +44,6 @@ namespace SudokuSolverConsole
 
                 Console.WriteLine();
             }
-
-            Console.ReadLine();
         }
     }
 }

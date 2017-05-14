@@ -13,33 +13,33 @@ namespace SudukoSolverLib.Search
         {
             var foundValue = false;
 
-            for (var i = 0; i < grid.Count; i++)
+            for (var x = 0; x < grid.Count; x++)
             {
-                for (var j = 0; j < grid[i].Count; j++)
+                for (var y = 0; y < grid[x].Count; y++)
                 {
-                    if (grid[i][j].Count() > 1)
+                    if (grid[x][y].Count > 1)
                     {
-                        for (var k = 1; k < 10; k++)
+                        for (var value = 1; value <= grid.Count; value++)
                         {
-                            var rowContainsResult = rowContains(grid[i], k);
-                            var colummContainsResult = columnContains(grid, j, k);
-                            var nondrantResult = nondrantContains(grid, i, j, k);
+                            //Check Row
+                            var rowContainsResult = rowContains(grid[x], value);
 
-                            if (rowContains(grid[i], k) || columnContains(grid, j, k) || nondrantContains(grid, i, j, k))
+                            //Check Column
+                            var colummContainsResult = columnContains(grid, y, value);
+
+                            //Check Nondrant
+                            var nondrantResult = nondrantContains(grid, x, y, value);
+
+                            if (rowContainsResult || colummContainsResult || nondrantResult)
                             {
-                                grid[i][j].Remove(k);
+                                grid[x][y].Remove(value);
 
-                                if (grid[i][j].Count() == 1)
+                                if (grid[x][y].Count == 1)
                                 {
                                     foundValue = true;
-                                    return foundValue;
+                                    break;
                                 }
                             }
-                        }
-
-                        if (grid[i][j].Count() == 1)
-                        {
-                            foundValue = true;
                         }
                     }
                 }
@@ -63,7 +63,7 @@ namespace SudukoSolverLib.Search
                     {
                         for (var y = j * 3; y < j * 3 + 3; y++)
                         {
-                            if (grid[x][y].Count() == 1)
+                            if (grid[x][y].Count == 1)
                             {
                                 nondrantNeeds.Remove(grid[x][y].Single());
                             }
@@ -86,7 +86,7 @@ namespace SudukoSolverLib.Search
                             }
                         }
 
-                        if (placesWeCouldPutNeededValue.Count() == 1)
+                        if (placesWeCouldPutNeededValue.Count == 1)
                         {
                             grid[placesWeCouldPutNeededValue.Single().Item1][placesWeCouldPutNeededValue.Single().Item2].Clear();
                             grid[placesWeCouldPutNeededValue.Single().Item1][placesWeCouldPutNeededValue.Single().Item2].Add(need);
@@ -100,17 +100,35 @@ namespace SudukoSolverLib.Search
             return foundValue;
         }
 
+        private bool nondrantContains(List<List<HashSet<int>>> grid, int x, int y, int value)
+        {
+            var flatNondrant = flattenNondrant(grid, x, y);
+            return rowContains(flatNondrant, value);
+        }
+
+        private bool columnContains(List<List<HashSet<int>>> grid, int y, int value)
+        {
+            var pivotedColumn = pivotColumn(grid, y);
+            return rowContains(pivotedColumn, value);
+        }
+
         public bool checkForNakedPairs(List<List<HashSet<int>>> grid)
         {
-            for (var x = 0; x < 9; x++)
+            for (var x = 0; x < grid.Count; x++)
             {
-                for (var y = 0; y < 9; y++)
+                for (var y = 0; y < grid[x].Count; y++)
                 {
                     if (grid[x][y].Count == 2)
                     {
                         removeRowNakedPairOptions(grid[x], grid[x][y]);
-                        removeColumnNakedPairOptions(grid, y, grid[x][y]);
-                        removeNondrantNakedPairOptions(grid, x, y, grid[x][y]);
+
+                        var pivotedColumn = pivotColumn(grid, y);
+
+                        removeRowNakedPairOptions(pivotedColumn, grid[x][y]);
+
+                        var flatNondrant = flattenNondrant(grid, x, y);
+
+                        removeRowNakedPairOptions(flatNondrant, grid[x][y]);
                     }
                 }
             }
@@ -125,10 +143,55 @@ namespace SudukoSolverLib.Search
                 removeRowNakedTriples(row);
             }
 
+            for (var columnIndex = 0; columnIndex < grid.First().Count; columnIndex++)
+            {
+                var pivotedColumn = pivotColumn(grid, columnIndex);
+                removeRowNakedTriples(pivotedColumn);
+            }
+
+            for (var x = 0; x < 3; x++)
+            {
+                for(var y = 0; y < 3; y++)
+                {
+                    var flatNondrant = flattenNondrant(grid, x, y);
+                    removeRowNakedTriples(flatNondrant);
+                }
+            }
+
             return true;
         }
 
-        private void removeRowNakedTriples(List<HashSet<int>> row)
+        public List<HashSet<int>> flattenNondrant(List<List<HashSet<int>>> grid, int x, int y)
+        {
+            var flatNondrant = new List<HashSet<int>>();
+
+            var searchRowIndex = (x/3) * 3;
+            var searchColumnIndex = (y/3) * 3;
+
+            for (var i = searchRowIndex; i < searchRowIndex + 3; i++)
+            {
+                for (var j = searchColumnIndex; j < searchColumnIndex + 3; j++)
+                {
+                    flatNondrant.Add(grid[i][j]);
+                }
+            }
+
+            return flatNondrant;
+        }
+
+        private List<HashSet<int>> pivotColumn(List<List<HashSet<int>>> grid, int columnIndex)
+        {
+            var pivotedColumn = new List<HashSet<int>>();
+
+            foreach (var row in grid)
+            {
+                pivotedColumn.Add(row[columnIndex]);
+            }
+
+            return pivotedColumn;
+        }
+
+        public void removeRowNakedTriples(List<HashSet<int>> row)
         {
             foreach (var checkCol in row)
             {
@@ -160,7 +223,7 @@ namespace SudukoSolverLib.Search
             return result;
         }
 
-        public void removeRowNakedPairOptions(List<HashSet<int>> row, HashSet<int> pair)
+        public virtual void removeRowNakedPairOptions(List<HashSet<int>> row, HashSet<int> pair)
         {
             var foundRowPair = false;
 
@@ -178,126 +241,12 @@ namespace SudukoSolverLib.Search
             }
         }
 
-        public void removeColumnNakedPairOptions(List<List<HashSet<int>>> grid, int columnIndex, HashSet<int> pair)
-        {
-            var matches = 0;
-
-            for (var i = 0; i < grid.Count; i++)
-            {
-                if (grid[i][columnIndex].SetEquals(pair))
-                {
-                    matches++;
-                }
-            }
-
-            if (matches == 2)
-            {
-                for (var i = 0; i < grid.Count; i++)
-                {
-                    if (!grid[i][columnIndex].SetEquals(pair))
-                    {
-                        foreach (var option in pair)
-                        {
-                            grid[i][columnIndex].Remove(option);
-                        }
-                    }
-                }
-            }
-        }
-
-        public void removeNondrantNakedPairOptions(List<List<HashSet<int>>> grid, int rowIndex, int columIndex, HashSet<int> pair)
-        {
-            var nondrantRowIndex = rowIndex / 3;
-            var nondrantColumnIndex = columIndex / 3;
-
-            var searchRowIndex = nondrantRowIndex * 3;
-            var searchColumnIndex = nondrantColumnIndex * 3;
-
-            var matches = 0;
-
-            for (var i = searchRowIndex; i < searchRowIndex + 3; i++)
-            {
-                for (var j = searchColumnIndex; j < searchColumnIndex + 3; j++)
-                {
-                    if (grid[i][j].SetEquals(pair))
-                    {
-                        matches++;
-                    }
-                }
-            }
-
-            if (matches == 2)
-            {
-                for (var i = searchRowIndex; i < searchRowIndex + 3; i++)
-                {
-                    for (var j = searchColumnIndex; j < searchColumnIndex + 3; j++)
-                    {
-                        if (!grid[i][j].SetEquals(pair) && grid[i][j].Count() > 1)
-                        {
-                            foreach (var option in pair)
-                            {
-                                grid[i][j].Remove(option);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
         public bool rowContains(List<HashSet<int>> row, int value)
         {
             foreach (var box in row)
             {
-                if (box.Count() == 1 && box.Single() == value)
+                if (box.Count == 1 && box.Single() == value)
                     return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Check if nondrant contains value
-        /// </summary>
-        /// <param name="grid">Grid to search</param>
-        /// <param name="i">Index of row in grid</param>
-        /// <param name="j">Index of column in grid</param>
-        /// <param name="k">Value to search for</param>
-        /// <returns></returns>
-        private static bool nondrantContains(List<List<HashSet<int>>> grid, int rowIndex, int columIndex, int k)
-        {
-            var nondrantRowIndex = rowIndex / 3;
-            var nondrantColumnIndex = columIndex / 3;
-
-            var searchRowIndex = nondrantRowIndex * 3;
-            var searchColumnIndex = nondrantColumnIndex * 3;
-
-            for (var i = searchRowIndex; i < searchRowIndex + 3; i++)
-            {
-                for (var j = searchColumnIndex; j < searchColumnIndex + 3; j++)
-                {
-                    if (grid[i][j].Count() == 1 && grid[i][j].Single() == k)
-                        return true;
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// See if column in grid contatain a value;
-        /// </summary>
-        /// <param name="grid">Grid to search</param>
-        /// <param name="i">Index of column</param>
-        /// <param name="j">Value to search for</param>
-        /// <returns></returns>
-        private static bool columnContains(List<List<HashSet<int>>> grid, int i, int j)
-        {
-            foreach (var row in grid)
-            {
-                if (row[i].Count() == 1 && row[i].Single() == j)
-                {
-                    return true;
-                }
             }
 
             return false;

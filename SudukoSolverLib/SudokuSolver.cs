@@ -24,15 +24,10 @@ namespace SudukoSolverLib
 
             while (!isSolved(grid))
             {
-                var foundValue = true;
-
-                foundValue = searchGrid.basicSearch(grid);
-
-                foundValue = searchGrid.nondrantSearch(grid) || foundValue;
-
-                foundValue = searchGrid.checkForNakedPairs(grid) || foundValue;
-
-                foundValue = searchGrid.checkForNakedTriples(grid) || foundValue;
+                searchGrid.basicSearch(grid);
+                searchGrid.nondrantSearch(grid);
+                searchGrid.checkForNakedPairs(grid);
+                searchGrid.checkForNakedTriples(grid);
             }
 
             return grid;
@@ -44,7 +39,7 @@ namespace SudukoSolverLib
             {
                 foreach (var col in row)
                 {
-                    if (col.Count() == 1)
+                    if (col.Count == 1)
                     {
                         Console.Write(col.Single());
                     }
@@ -93,7 +88,7 @@ namespace SudukoSolverLib
             {
                 foreach (var col in row)
                 {
-                    if (col.Count() != 1)
+                    if (col.Count != 1)
                     {
                         return false;
                     }
@@ -111,7 +106,7 @@ namespace SudukoSolverLib
             {
                 foreach (var col in row)
                 {
-                    result += col.Count();
+                    result += col.Count;
                 }
             }
 
@@ -126,7 +121,7 @@ namespace SudukoSolverLib
             {
                 foreach (var col in row)
                 {
-                    if(col.Count() == 1)
+                    if(col.Count == 1)
                     {
                         result++;
                     }
@@ -142,7 +137,7 @@ namespace SudukoSolverLib
             {
                 foreach (var col in row)
                 {
-                    if (col.Count() == 0)
+                    if (col.Count == 0)
                     {
                         return true;
                     }

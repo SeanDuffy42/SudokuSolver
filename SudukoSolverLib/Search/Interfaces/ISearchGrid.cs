@@ -15,5 +15,7 @@ namespace SudukoSolverLib.Search.Interfaces
 
         bool rowContains(List<HashSet<int>> row, int value);
         void removeRowNakedPairOptions(List<HashSet<int>> row, HashSet<int> pair);
+        void removeRowNakedTriples(List<HashSet<int>> row);
+        List<HashSet<int>> flattenNondrant(List<List<HashSet<int>>> grid, int x, int y);
     }
 }
