@@ -4,13 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SudukoSolverLib.Models;
 
 namespace SudukoSolverLib.Search
 {
     public class SearchGrid : ISearchGrid
     {
-        public bool basicSearch(List<List<Guess>> grid)
+        public bool basicSearch(List<List<HashSet<int>>> grid)
         {
             var foundValue = false;
 
@@ -18,20 +17,19 @@ namespace SudukoSolverLib.Search
             {
                 for (var j = 0; j < grid[i].Count; j++)
                 {
-                    if (grid[i][j].Options.Count() > 1)
+                    if (grid[i][j].Count() > 1)
                     {
                         for (var k = 1; k < 10; k++)
                         {
-
                             var rowContainsResult = rowContains(grid[i], k);
                             var colummContainsResult = columnContains(grid, j, k);
                             var nondrantResult = nondrantContains(grid, i, j, k);
 
                             if (rowContains(grid[i], k) || columnContains(grid, j, k) || nondrantContains(grid, i, j, k))
                             {
-                                grid[i][j].Options.Remove(k);
+                                grid[i][j].Remove(k);
 
-                                if (grid[i][j].Options.Count() == 1)
+                                if (grid[i][j].Count() == 1)
                                 {
                                     foundValue = true;
                                     return foundValue;
@@ -39,7 +37,7 @@ namespace SudukoSolverLib.Search
                             }
                         }
 
-                        if (grid[i][j].Options.Count() == 1)
+                        if (grid[i][j].Count() == 1)
                         {
                             foundValue = true;
                         }
@@ -50,7 +48,7 @@ namespace SudukoSolverLib.Search
             return foundValue;
         }
 
-        public bool nondrantSearch(List<List<Guess>> grid)
+        public bool nondrantSearch(List<List<HashSet<int>>> grid)
         {
             var foundValue = false;
 
@@ -65,9 +63,9 @@ namespace SudukoSolverLib.Search
                     {
                         for (var y = j * 3; y < j * 3 + 3; y++)
                         {
-                            if (grid[x][y].Options.Count() == 1)
+                            if (grid[x][y].Count() == 1)
                             {
-                                nondrantNeeds.Remove(grid[x][y].Options.Single());
+                                nondrantNeeds.Remove(grid[x][y].Single());
                             }
                         }
                     }
@@ -81,7 +79,7 @@ namespace SudukoSolverLib.Search
                         {
                             for (var y = j * 3; y < j * 3 + 3; y++)
                             {
-                                if (grid[x][y].Options.Count != 1 && !rowContains(grid[x], need) && !columnContains(grid, y, need) && !nondrantContains(grid, x, y, need) && grid[x][y].Options.Contains(need))
+                                if (grid[x][y].Count != 1 && !rowContains(grid[x], need) && !columnContains(grid, y, need) && !nondrantContains(grid, x, y, need) && grid[x][y].Contains(need))
                                 {
                                     placesWeCouldPutNeededValue.Add(new Tuple<int, int>(x, y));
                                 }
@@ -90,8 +88,8 @@ namespace SudukoSolverLib.Search
 
                         if (placesWeCouldPutNeededValue.Count() == 1)
                         {
-                            grid[placesWeCouldPutNeededValue.Single().Item1][placesWeCouldPutNeededValue.Single().Item2].Options.Clear();
-                            grid[placesWeCouldPutNeededValue.Single().Item1][placesWeCouldPutNeededValue.Single().Item2].Options.Add(need);
+                            grid[placesWeCouldPutNeededValue.Single().Item1][placesWeCouldPutNeededValue.Single().Item2].Clear();
+                            grid[placesWeCouldPutNeededValue.Single().Item1][placesWeCouldPutNeededValue.Single().Item2].Add(need);
 
                             foundValue = true;
                         }
@@ -102,17 +100,17 @@ namespace SudukoSolverLib.Search
             return foundValue;
         }
 
-        public bool checkForNakedPairs(List<List<Guess>> grid)
+        public bool checkForNakedPairs(List<List<HashSet<int>>> grid)
         {
             for (var x = 0; x < 9; x++)
             {
                 for (var y = 0; y < 9; y++)
                 {
-                    if (grid[x][y].Options.Count == 2)
+                    if (grid[x][y].Count == 2)
                     {
-                        removeRowNakedPairOptions(grid[x], grid[x][y].Options);
-                        removeColumnNakedPairOptions(grid, y, grid[x][y].Options);
-                        removeNondrantNakedPairOptions(grid, x, y, grid[x][y].Options);
+                        removeRowNakedPairOptions(grid[x], grid[x][y]);
+                        removeColumnNakedPairOptions(grid, y, grid[x][y]);
+                        removeNondrantNakedPairOptions(grid, x, y, grid[x][y]);
                     }
                 }
             }
@@ -120,9 +118,9 @@ namespace SudukoSolverLib.Search
             return true;
         }
 
-        public bool checkForNakedTriples(List<List<Guess>> grid)
+        public bool checkForNakedTriples(List<List<HashSet<int>>> grid)
         {
-            foreach(var row in grid)
+            foreach (var row in grid)
             {
                 removeRowNakedTriples(row);
             }
@@ -130,30 +128,30 @@ namespace SudukoSolverLib.Search
             return true;
         }
 
-        private void removeRowNakedTriples(List<Guess> row)
+        private void removeRowNakedTriples(List<HashSet<int>> row)
         {
             foreach (var checkCol in row)
             {
-                if(checkCol.Options.Count == 3 && howManySubsets(row, checkCol.Options) == 3)
+                if (checkCol.Count == 3 && howManySubsets(row, checkCol) == 3)
                 {
-                    foreach (var removeCol in row.Where(c => !c.Options.IsSubsetOf(checkCol.Options)))
+                    foreach (var removeCol in row.Where(c => !c.IsSubsetOf(checkCol)))
                     {
-                        foreach(var opt in checkCol.Options)
+                        foreach (var opt in checkCol)
                         {
-                            removeCol.Options.Remove(opt);
+                            removeCol.Remove(opt);
                         }
                     }
                 }
             }
         }
 
-        private int howManySubsets(List<Guess> row, HashSet<int> options)
+        private int howManySubsets(List<HashSet<int>> row, HashSet<int> options)
         {
             var result = 0;
 
-            foreach(var col in row)
+            foreach (var col in row)
             {
-                if (col.Options.IsSubsetOf(options))
+                if (col.IsSubsetOf(options))
                 {
                     result++;
                 }
@@ -162,52 +160,52 @@ namespace SudukoSolverLib.Search
             return result;
         }
 
-        public void removeRowNakedPairOptions(List<Guess> row, HashSet<int> pair)
+        public void removeRowNakedPairOptions(List<HashSet<int>> row, HashSet<int> pair)
         {
             var foundRowPair = false;
 
-            foundRowPair = row.Where(col => col.Options.SetEquals(pair)).Count() == 2;
+            foundRowPair = row.Where(col => col.SetEquals(pair)).Count() == 2;
 
             if (foundRowPair)
             {
-                foreach (var col in row.Where(g => !g.Options.SetEquals(pair)))
+                foreach (var col in row.Where(g => !g.SetEquals(pair)))
                 {
-                    foreach(var option in pair)
+                    foreach (var option in pair)
                     {
-                        col.Options.Remove(option);
+                        col.Remove(option);
                     }
                 }
             }
         }
 
-        public void removeColumnNakedPairOptions(List<List<Guess>> grid, int columnIndex, HashSet<int> pair)
+        public void removeColumnNakedPairOptions(List<List<HashSet<int>>> grid, int columnIndex, HashSet<int> pair)
         {
             var matches = 0;
 
             for (var i = 0; i < grid.Count; i++)
             {
-                if (grid[i][columnIndex].Options.SetEquals(pair))
+                if (grid[i][columnIndex].SetEquals(pair))
                 {
                     matches++;
                 }
             }
 
-            if(matches == 2)
+            if (matches == 2)
             {
                 for (var i = 0; i < grid.Count; i++)
                 {
-                    if (!grid[i][columnIndex].Options.SetEquals(pair))
+                    if (!grid[i][columnIndex].SetEquals(pair))
                     {
                         foreach (var option in pair)
                         {
-                            grid[i][columnIndex].Options.Remove(option);
+                            grid[i][columnIndex].Remove(option);
                         }
                     }
                 }
             }
         }
 
-        public void removeNondrantNakedPairOptions(List<List<Guess>> grid, int rowIndex, int columIndex, HashSet<int> pair)
+        public void removeNondrantNakedPairOptions(List<List<HashSet<int>>> grid, int rowIndex, int columIndex, HashSet<int> pair)
         {
             var nondrantRowIndex = rowIndex / 3;
             var nondrantColumnIndex = columIndex / 3;
@@ -221,24 +219,24 @@ namespace SudukoSolverLib.Search
             {
                 for (var j = searchColumnIndex; j < searchColumnIndex + 3; j++)
                 {
-                    if (grid[i][j].Options.SetEquals(pair))
+                    if (grid[i][j].SetEquals(pair))
                     {
                         matches++;
                     }
                 }
             }
 
-            if(matches == 2)
+            if (matches == 2)
             {
                 for (var i = searchRowIndex; i < searchRowIndex + 3; i++)
                 {
                     for (var j = searchColumnIndex; j < searchColumnIndex + 3; j++)
                     {
-                        if (!grid[i][j].Options.SetEquals(pair) && grid[i][j].Options.Count() > 1)
+                        if (!grid[i][j].SetEquals(pair) && grid[i][j].Count() > 1)
                         {
                             foreach (var option in pair)
                             {
-                                grid[i][j].Options.Remove(option);
+                                grid[i][j].Remove(option);
                             }
                         }
                     }
@@ -246,11 +244,11 @@ namespace SudukoSolverLib.Search
             }
         }
 
-        public bool rowContains(List<Guess> row, int value)
+        public bool rowContains(List<HashSet<int>> row, int value)
         {
-            foreach (var guesses in row)
+            foreach (var box in row)
             {
-                if (guesses.Options.Count() == 1 && guesses.Options.Single() == value)
+                if (box.Count() == 1 && box.Single() == value)
                     return true;
             }
 
@@ -265,7 +263,7 @@ namespace SudukoSolverLib.Search
         /// <param name="j">Index of column in grid</param>
         /// <param name="k">Value to search for</param>
         /// <returns></returns>
-        private static bool nondrantContains(List<List<Guess>> grid, int rowIndex, int columIndex, int k)
+        private static bool nondrantContains(List<List<HashSet<int>>> grid, int rowIndex, int columIndex, int k)
         {
             var nondrantRowIndex = rowIndex / 3;
             var nondrantColumnIndex = columIndex / 3;
@@ -277,7 +275,7 @@ namespace SudukoSolverLib.Search
             {
                 for (var j = searchColumnIndex; j < searchColumnIndex + 3; j++)
                 {
-                    if (grid[i][j].Options.Count() == 1 && grid[i][j].Options.Single() == k)
+                    if (grid[i][j].Count() == 1 && grid[i][j].Single() == k)
                         return true;
                 }
             }
@@ -292,11 +290,11 @@ namespace SudukoSolverLib.Search
         /// <param name="i">Index of column</param>
         /// <param name="j">Value to search for</param>
         /// <returns></returns>
-        private static bool columnContains(List<List<Guess>> grid, int i, int j)
+        private static bool columnContains(List<List<HashSet<int>>> grid, int i, int j)
         {
             foreach (var row in grid)
             {
-                if (row[i].Options.Count() == 1 && row[i].Options.Single() == j)
+                if (row[i].Count() == 1 && row[i].Single() == j)
                 {
                     return true;
                 }
@@ -304,5 +302,6 @@ namespace SudukoSolverLib.Search
 
             return false;
         }
+
     }
 }

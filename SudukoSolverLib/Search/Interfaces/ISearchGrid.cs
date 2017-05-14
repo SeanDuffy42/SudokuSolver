@@ -1,5 +1,4 @@
-﻿using SudukoSolverLib.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,12 +8,12 @@ namespace SudukoSolverLib.Search.Interfaces
 {
     public interface ISearchGrid
     {
-        bool basicSearch(List<List<Guess>> grid);
-        bool nondrantSearch(List<List<Guess>> grid);
-        bool checkForNakedPairs(List<List<Guess>> grid);
-        bool checkForNakedTriples(List<List<Guess>> grid);
+        bool basicSearch(List<List<HashSet<int>>> grid);
+        bool nondrantSearch(List<List<HashSet<int>>> grid);
+        bool checkForNakedPairs(List<List<HashSet<int>>> grid);
+        bool checkForNakedTriples(List<List<HashSet<int>>> grid);
 
-        bool rowContains(List<Guess> row, int value);
-        void removeRowNakedPairOptions(List<Guess> row, HashSet<int> pair);
+        bool rowContains(List<HashSet<int>> row, int value);
+        void removeRowNakedPairOptions(List<HashSet<int>> row, HashSet<int> pair);
     }
 }

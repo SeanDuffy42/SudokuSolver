@@ -1,5 +1,4 @@
 ﻿using SudukoSolverLib.Interfaces;
-using SudukoSolverLib.Models;
 using SudukoSolverLib.Search.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -19,7 +18,7 @@ namespace SudukoSolverLib
             this.searchGrid = searchGrid;
         }
 
-        public List<List<Guess>> SolvePuzzle(string fileName)
+        public List<List<HashSet<int>>> SolvePuzzle(string fileName)
         {
             var grid = readFileIntoGrid(fileName);
 
@@ -39,15 +38,15 @@ namespace SudukoSolverLib
             return grid;
         }
 
-        public void printGrid(List<List<Guess>> grid)
+        public void printGrid(List<List<List<int>>> grid)
         {
             foreach (var row in grid)
             {
                 foreach (var col in row)
                 {
-                    if (col.Options.Count() == 1)
+                    if (col.Count() == 1)
                     {
-                        Console.Write(col.Options.Single());
+                        Console.Write(col.Single());
                     }
                     else
                     {
@@ -60,34 +59,25 @@ namespace SudukoSolverLib
             Console.WriteLine();
         }
 
-        public List<List<Guess>> readFileIntoGrid(string fileName)
+        public List<List<HashSet<int>>> readFileIntoGrid(string fileName)
         {
-            var grid = new List<List<Guess>>();
+            var grid = new List<List<HashSet<int>>>();
 
             var lines = File.ReadAllLines("puzzle.txt");
 
             foreach (var line in lines)
             {
-                var row = new List<Guess>();
+                var row = new List<HashSet<int>>();
 
                 foreach (var box in line)
                 {
                     if (box == 'X')
                     {
-                        row.Add(new Guess()
-                        {
-                            Options = new HashSet<int> { 1,2,3,4,5,6,7,8,9}
-                        });
+                        row.Add(new HashSet<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
                     }
                     else
                     {
-                        var singleGuess = new Guess
-                        {
-                            Value = int.Parse(box.ToString()),
-                            Options = new HashSet<int> { int.Parse(box.ToString()) }
-                        };
-
-                        row.Add(singleGuess);
+                        row.Add(new HashSet<int> { int.Parse(box.ToString()) });
                     }
                 }
 
@@ -97,13 +87,13 @@ namespace SudukoSolverLib
             return grid;
         }
 
-        public bool isSolved(List<List<Guess>> grid)
+        public bool isSolved(List<List<HashSet<int>>> grid)
         {
             foreach (var row in grid)
             {
                 foreach (var col in row)
                 {
-                    if (col.Options.Count() != 1)
+                    if (col.Count() != 1)
                     {
                         return false;
                     }
@@ -113,7 +103,7 @@ namespace SudukoSolverLib
             return true;
         }
 
-        public int numberOfOptions(List<List<Guess>> grid)
+        public int numberOfOptions(List<List<HashSet<int>>> grid)
         {
             var result = 0;
 
@@ -121,14 +111,14 @@ namespace SudukoSolverLib
             {
                 foreach (var col in row)
                 {
-                    result += col.Options.Count();
+                    result += col.Count();
                 }
             }
 
             return result;
         }
 
-        public int numberSolved(List<List<Guess>> grid)
+        public int numberSolved(List<List<HashSet<int>>> grid)
         {
             var result = 0;
 
@@ -136,7 +126,7 @@ namespace SudukoSolverLib
             {
                 foreach (var col in row)
                 {
-                    if(col.Options.Count() == 1)
+                    if(col.Count() == 1)
                     {
                         result++;
                     }
@@ -146,13 +136,13 @@ namespace SudukoSolverLib
             return result;
         }
 
-        public bool whoIsKillingTheOptions(List<List<Guess>> grid)
+        public bool whoIsKillingTheOptions(List<List<HashSet<int>>> grid)
         {
             foreach (var row in grid)
             {
                 foreach (var col in row)
                 {
-                    if (col.Options.Count() == 0)
+                    if (col.Count() == 0)
                     {
                         return true;
                     }

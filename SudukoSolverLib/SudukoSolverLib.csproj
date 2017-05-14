@@ -57,7 +57,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Interfaces\ISudokuSolver.cs" />
-    <Compile Include="Models\Guess.cs" />
     <Compile Include="Search\Interfaces\ISearchGrid.cs" />
     <Compile Include="Search\SearchGrid.cs" />
     <Compile Include="SudokuSolver.cs" />

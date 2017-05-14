@@ -31,9 +31,9 @@ namespace SudokuSolverConsole
             {
                 foreach (var col in row)
                 {
-                    if (col.Options.Count() == 1)
+                    if (col.Count() == 1)
                     {
-                        Console.Write(col.Options.Single());
+                        Console.Write(col.Single());
                     }
                     else
                     {
