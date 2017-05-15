@@ -20,3 +20,19 @@ Where an X represents an empty box.
 When run without any arguments the app will use the "defaultFileName" as the source file, which is currently set to "puzzle.txt".
 
 The app can also be supplied a file name as a first argument.
+
+## Algorithms
+
+### Implemented
+-Basic Search<br>
+-Hidden Singles<br>
+-Naked Pairs/Triples<br>
+
+### TODO
+-Pointing Pairs<br>
+-Box/Line Reduction<br>
+
+NOTE: As all base level Algorithems have not been implemented this currently cannot solve all puzzles.
+
+See http://www.sudokuwiki.org for reference.
+
