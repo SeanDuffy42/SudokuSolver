@@ -58,7 +58,7 @@ namespace SudukoSolverLib
         {
             var grid = new List<List<HashSet<int>>>();
 
-            var lines = File.ReadAllLines("puzzle.txt");
+            var lines = File.ReadAllLines(fileName);
 
             foreach (var line in lines)
             {

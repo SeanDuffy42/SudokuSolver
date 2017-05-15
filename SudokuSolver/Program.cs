@@ -21,25 +21,39 @@ namespace SudokuSolverConsole
 
             var fileName = ConfigurationManager.AppSettings["defaultFileName"];
 
-            if (args.Length > 1)
+            var filesToSolve = new List<string>();
+
+            if (args.Length > 0)
             {
-                fileName = args[1];
+                for (var i = 0; i < args.Length; i++)
+                {
+                    filesToSolve.Add(args[i]);
+                }
+            }
+            else
+            {
+                filesToSolve.Add(fileName);
             }
 
-            var grid = solver.SolvePuzzle(fileName);
-
-            foreach (var row in grid)
+            foreach(var fileToSolve in filesToSolve)
             {
-                foreach (var col in row)
+                var grid = solver.SolvePuzzle(fileToSolve);
+
+                foreach (var row in grid)
                 {
-                    if (col.Count == 1)
+                    foreach (var col in row)
                     {
-                        Console.Write(col.Single());
+                        if (col.Count == 1)
+                        {
+                            Console.Write(col.Single());
+                        }
+                        else
+                        {
+                            Console.Write('X');
+                        }
                     }
-                    else
-                    {
-                        Console.Write('X');
-                    }
+
+                    Console.WriteLine();
                 }
 
                 Console.WriteLine();
