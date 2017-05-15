@@ -17,9 +17,9 @@ X5XX37XXX<br>
 Where an X represents an empty box.
 
 ## Arguments
-When run without any arguments the app will use the "defaultFileName" as the source file, which is currently set to "puzzle.txt".
+When run without any arguments the app will use the "defaultFileName" app setting in the config gile as the source file, which is currently set to "puzzle.txt".
 
-The app can also be supplied a file name as a first argument.
+The app can also be run with n number of file names to solve.
 
 ## Algorithms
 
