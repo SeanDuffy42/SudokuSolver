@@ -48,6 +48,57 @@ namespace SudukoSolverLib.Search
             return foundValue;
         }
 
+        public bool hiddenSingleSearch(List<List<HashSet<int>>> grid)
+        {
+            foreach(var row in grid)
+            {
+                findRowHiddenSigles(row);
+            }
+
+            for(var i = 0; i<grid.Count; i++)
+            {
+                var pivotRow = pivotColumn(grid, i);
+                findRowHiddenSigles(pivotRow);
+            }
+
+            return true;
+        }
+
+        public bool findRowHiddenSigles(List<HashSet<int>> row)
+        {
+            var rowNeeds = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            foreach(var col in row)
+            {
+                if(col.Count == 1)
+                {
+                    rowNeeds.Remove(col.Single());
+                }
+            }
+
+            foreach(var need in rowNeeds)
+            {
+                var placesWeCouldPutNeed = new List<HashSet<int>>();
+
+                foreach(var col in row)
+                {
+                    if (col.Count != 1 && col.Contains(need))
+                    {
+                        placesWeCouldPutNeed.Add(col);
+                    }
+                }
+
+                if(placesWeCouldPutNeed.Count == 1)
+                {
+                    placesWeCouldPutNeed.Single().Clear();
+                    placesWeCouldPutNeed.Single().Add(need);
+                }
+            }
+
+
+            return true;
+        }
+
         public bool nondrantSearch(List<List<HashSet<int>>> grid)
         {
             var foundValue = false;

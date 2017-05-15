@@ -9,6 +9,7 @@ namespace SudukoSolverLib.Search.Interfaces
     public interface ISearchGrid
     {
         bool basicSearch(List<List<HashSet<int>>> grid);
+        bool hiddenSingleSearch(List<List<HashSet<int>>> grid);
         bool nondrantSearch(List<List<HashSet<int>>> grid);
         bool checkForNakedPairs(List<List<HashSet<int>>> grid);
         bool checkForNakedTriples(List<List<HashSet<int>>> grid);

@@ -58,6 +58,8 @@ namespace SudokuSolverConsole
 
                 Console.WriteLine();
             }
+
+            Console.ReadLine();
         }
     }
 }

@@ -25,6 +25,7 @@ namespace SudukoSolverLib
             while (!isSolved(grid))
             {
                 searchGrid.basicSearch(grid);
+                searchGrid.hiddenSingleSearch(grid);
                 searchGrid.nondrantSearch(grid);
                 searchGrid.checkForNakedPairs(grid);
                 searchGrid.checkForNakedTriples(grid);
@@ -33,7 +34,7 @@ namespace SudukoSolverLib
             return grid;
         }
 
-        public void printGrid(List<List<List<int>>> grid)
+        public void printGrid(List<List<HashSet<int>>> grid)
         {
             foreach (var row in grid)
             {
