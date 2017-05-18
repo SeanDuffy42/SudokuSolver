@@ -9,7 +9,7 @@ namespace SudukoSolverLib.Search.Interfaces
     public interface ISearchGrid
     {
         bool basicSearch(List<List<HashSet<int>>> grid);
-        bool hiddenSingleSearch(List<List<HashSet<int>>> grid);
+        bool hiddenSingleAndPairSearch(List<List<HashSet<int>>> grid);
         bool nondrantSearch(List<List<HashSet<int>>> grid);
         bool checkForNakedPairs(List<List<HashSet<int>>> grid);
         bool checkForNakedTriples(List<List<HashSet<int>>> grid);
@@ -18,5 +18,6 @@ namespace SudukoSolverLib.Search.Interfaces
         void removeRowNakedPairOptions(List<HashSet<int>> row, HashSet<int> pair);
         void removeRowNakedTriples(List<HashSet<int>> row);
         List<HashSet<int>> flattenNondrant(List<List<HashSet<int>>> grid, int x, int y);
+        void removePointingRow(List<HashSet<int>> row, int indexOfBox, int need);
     }
 }

@@ -22,17 +22,32 @@ namespace SudukoSolverLib
         {
             var grid = readFileIntoGrid(fileName);
 
-            while (!isSolved(grid))
+            return SolvePuzzle(grid);
+        }
+
+        public List<List<HashSet<int>>> SolvePuzzle(List<List<HashSet<int>>> grid)
+        {
+            var numOfOptions = numberOfOptions(grid);
+
+            var Done = false;
+
+            while (!Done)
             {
+                numOfOptions = numberOfOptions(grid);
+
                 searchGrid.basicSearch(grid);
-                searchGrid.hiddenSingleSearch(grid);
+                searchGrid.hiddenSingleAndPairSearch(grid);
                 searchGrid.nondrantSearch(grid);
                 searchGrid.checkForNakedPairs(grid);
                 searchGrid.checkForNakedTriples(grid);
+
+                Done = isSolved(grid) || numOfOptions == numberOfOptions(grid);
             }
 
             return grid;
         }
+
+
 
         public void printGrid(List<List<HashSet<int>>> grid)
         {

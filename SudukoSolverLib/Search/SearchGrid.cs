@@ -48,17 +48,19 @@ namespace SudukoSolverLib.Search
             return foundValue;
         }
 
-        public bool hiddenSingleSearch(List<List<HashSet<int>>> grid)
+        public bool hiddenSingleAndPairSearch(List<List<HashSet<int>>> grid)
         {
             foreach(var row in grid)
             {
                 findRowHiddenSigles(row);
+                //findRowHiddenPairs(row);
             }
 
             for(var i = 0; i<grid.Count; i++)
             {
                 var pivotRow = pivotColumn(grid, i);
                 findRowHiddenSigles(pivotRow);
+                //findRowHiddenPairs(pivotRow);
             }
 
             return true;
@@ -95,6 +97,53 @@ namespace SudukoSolverLib.Search
                 }
             }
 
+
+            return true;
+        }
+
+
+
+        public bool findRowHiddenPairs(List<HashSet<int>> row)
+        {
+            var rowNeeds = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            foreach (var col in row)
+            {
+                if (col.Count == 1)
+                {
+                    rowNeeds.Remove(col.Single());
+                }
+            }
+
+            var rowNeedsPairs = (from left in rowNeeds
+                                 from right in rowNeeds
+                                 where right > left
+                                 select new HashSet<int> { left, right }).ToList();
+
+            foreach (var rowNeedPair in rowNeedsPairs)
+            {
+                var placesWeCouldPutNeed = new List<HashSet<int>>();
+
+                foreach (var col in row)
+                {
+                    if(rowNeedPair.IsSubsetOf(col))
+                    {
+                        placesWeCouldPutNeed.Add(col);
+                    }
+                }
+
+                if(placesWeCouldPutNeed.Count == 2)
+                {
+                    foreach(var place in placesWeCouldPutNeed)
+                    {
+                        place.Clear();
+                        foreach(var value in rowNeedPair)
+                        {
+                            place.Add(value);
+                        }
+                    }
+                }
+            }
 
             return true;
         }
@@ -144,11 +193,37 @@ namespace SudukoSolverLib.Search
 
                             foundValue = true;
                         }
+                        else if (placesWeCouldPutNeededValue.Count == 2 || placesWeCouldPutNeededValue.Count == 3)
+                        {
+                            var firstX = placesWeCouldPutNeededValue.First().Item1;
+                            var firstY = placesWeCouldPutNeededValue.First().Item2;
+
+                            if (placesWeCouldPutNeededValue.All(p => p.Item1 == firstX))
+                            {
+                                removePointingRow(grid[firstX], j, need);
+                            }
+                            else if (placesWeCouldPutNeededValue.All(p => p.Item2 == firstY))
+                            {
+                                var pivotRow = pivotColumn(grid, firstY);
+                                removePointingRow(pivotRow, i, need);
+                            }
+                        }
                     }
                 }
             }
 
             return foundValue;
+        }
+
+        public void removePointingRow(List<HashSet<int>> row, int indexOfBox, int need)
+        {
+            for(var i = 0; i<row.Count; i++)
+            {
+                if(i/3 != indexOfBox)
+                {
+                    row[i].Remove(need);
+                }
+            }
         }
 
         private bool nondrantContains(List<List<HashSet<int>>> grid, int x, int y, int value)
@@ -301,6 +376,28 @@ namespace SudukoSolverLib.Search
             }
 
             return false;
+        }
+
+        //DEBUG
+        public void printGrid(List<List<HashSet<int>>> grid)
+        {
+            foreach (var row in grid)
+            {
+                foreach (var col in row)
+                {
+                    if (col.Count == 1)
+                    {
+                        Console.Write(col.Single());
+                    }
+                    else
+                    {
+                        Console.Write('X');
+                    }
+                }
+
+                Console.WriteLine();
+            }
+            Console.WriteLine();
         }
 
     }

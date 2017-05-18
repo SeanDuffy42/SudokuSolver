@@ -279,5 +279,34 @@ namespace SudokuSolverLibTests.Search
                 Assert.IsTrue(flatNondrant[i].SetEquals(expected[i]));
             }
         }
+
+        [TestMethod]
+        public void removePointingParis()
+        {
+            var row = new List<HashSet<int>>
+            {
+                new HashSet<int> { 7 },
+                new HashSet<int> { 2, 3, 4 },
+                new HashSet<int> { 1,2,4,6,9 },
+                new HashSet<int> { 5 },
+                new HashSet<int> { 4,9 },
+                new HashSet<int> { 8 },
+                new HashSet<int> { 1,4,6,9 },
+                new HashSet<int> { 3,4,6 },
+                new HashSet<int> { 3,6,9 },
+            };
+
+            searchGrid.removePointingRow(row, 2, 3);
+
+            Assert.IsTrue(row[0].SetEquals(new HashSet<int> { 7 }));
+            Assert.IsTrue(row[1].SetEquals(new HashSet<int> { 2, 4 }));
+            Assert.IsTrue(row[2].SetEquals(new HashSet<int> { 1, 2, 4, 6, 9 }));
+            Assert.IsTrue(row[3].SetEquals(new HashSet<int> { 5 }));
+            Assert.IsTrue(row[4].SetEquals(new HashSet<int> { 4, 9 }));
+            Assert.IsTrue(row[5].SetEquals(new HashSet<int> { 8 }));
+            Assert.IsTrue(row[6].SetEquals(new HashSet<int> { 1, 4, 6, 9 }));
+            Assert.IsTrue(row[7].SetEquals(new HashSet<int> { 3, 4, 6 }));
+            Assert.IsTrue(row[8].SetEquals(new HashSet<int> { 3, 6, 9 }));
+        }
     }
 }

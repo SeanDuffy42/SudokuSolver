@@ -9,5 +9,6 @@ namespace SudukoSolverLib.Interfaces
     public interface ISudokuSolver
     {
         List<List<HashSet<int>>> SolvePuzzle(string fileName);
+        List<List<HashSet<int>>> SolvePuzzle(List<List<HashSet<int>>> grid);
     }
 }
