@@ -48,19 +48,17 @@ namespace SudukoSolverLib.Search
             return foundValue;
         }
 
-        public bool hiddenSingleAndPairSearch(List<List<HashSet<int>>> grid)
+        public bool hiddenSinglesSearch(List<List<HashSet<int>>> grid)
         {
             foreach(var row in grid)
             {
                 findRowHiddenSigles(row);
-                //findRowHiddenPairs(row);
             }
 
             for(var i = 0; i<grid.Count; i++)
             {
                 var pivotRow = pivotColumn(grid, i);
                 findRowHiddenSigles(pivotRow);
-                //findRowHiddenPairs(pivotRow);
             }
 
             return true;
@@ -70,15 +68,15 @@ namespace SudukoSolverLib.Search
         {
             var rowNeeds = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-            foreach(var col in row)
+            foreach (var col in row)
             {
-                if(col.Count == 1)
+                if (col.Count == 1)
                 {
                     rowNeeds.Remove(col.Single());
                 }
             }
 
-            foreach(var need in rowNeeds)
+            foreach (var need in rowNeeds)
             {
                 var placesWeCouldPutNeed = new List<HashSet<int>>();
 
@@ -97,53 +95,6 @@ namespace SudukoSolverLib.Search
                 }
             }
 
-
-            return true;
-        }
-
-
-
-        public bool findRowHiddenPairs(List<HashSet<int>> row)
-        {
-            var rowNeeds = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-
-            foreach (var col in row)
-            {
-                if (col.Count == 1)
-                {
-                    rowNeeds.Remove(col.Single());
-                }
-            }
-
-            var rowNeedsPairs = (from left in rowNeeds
-                                 from right in rowNeeds
-                                 where right > left
-                                 select new HashSet<int> { left, right }).ToList();
-
-            foreach (var rowNeedPair in rowNeedsPairs)
-            {
-                var placesWeCouldPutNeed = new List<HashSet<int>>();
-
-                foreach (var col in row)
-                {
-                    if(rowNeedPair.IsSubsetOf(col))
-                    {
-                        placesWeCouldPutNeed.Add(col);
-                    }
-                }
-
-                if(placesWeCouldPutNeed.Count == 2)
-                {
-                    foreach(var place in placesWeCouldPutNeed)
-                    {
-                        place.Clear();
-                        foreach(var value in rowNeedPair)
-                        {
-                            place.Add(value);
-                        }
-                    }
-                }
-            }
 
             return true;
         }
@@ -377,28 +328,5 @@ namespace SudukoSolverLib.Search
 
             return false;
         }
-
-        //DEBUG
-        public void printGrid(List<List<HashSet<int>>> grid)
-        {
-            foreach (var row in grid)
-            {
-                foreach (var col in row)
-                {
-                    if (col.Count == 1)
-                    {
-                        Console.Write(col.Single());
-                    }
-                    else
-                    {
-                        Console.Write('X');
-                    }
-                }
-
-                Console.WriteLine();
-            }
-            Console.WriteLine();
-        }
-
     }
 }

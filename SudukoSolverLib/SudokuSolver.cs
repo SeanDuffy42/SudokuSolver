@@ -36,7 +36,7 @@ namespace SudukoSolverLib
                 numOfOptions = numberOfOptions(grid);
 
                 searchGrid.basicSearch(grid);
-                searchGrid.hiddenSingleAndPairSearch(grid);
+                searchGrid.hiddenSinglesSearch(grid);
                 searchGrid.nondrantSearch(grid);
                 searchGrid.checkForNakedPairs(grid);
                 searchGrid.checkForNakedTriples(grid);
@@ -45,29 +45,6 @@ namespace SudukoSolverLib
             }
 
             return grid;
-        }
-
-
-
-        public void printGrid(List<List<HashSet<int>>> grid)
-        {
-            foreach (var row in grid)
-            {
-                foreach (var col in row)
-                {
-                    if (col.Count == 1)
-                    {
-                        Console.Write(col.Single());
-                    }
-                    else
-                    {
-                        Console.Write('X');
-                    }
-                }
-
-                Console.WriteLine();
-            }
-            Console.WriteLine();
         }
 
         public List<List<HashSet<int>>> readFileIntoGrid(string fileName)
@@ -128,40 +105,5 @@ namespace SudukoSolverLib
 
             return result;
         }
-
-        public int numberSolved(List<List<HashSet<int>>> grid)
-        {
-            var result = 0;
-
-            foreach (var row in grid)
-            {
-                foreach (var col in row)
-                {
-                    if(col.Count == 1)
-                    {
-                        result++;
-                    }
-                }
-            }
-
-            return result;
-        }
-
-        public bool whoIsKillingTheOptions(List<List<HashSet<int>>> grid)
-        {
-            foreach (var row in grid)
-            {
-                foreach (var col in row)
-                {
-                    if (col.Count == 0)
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
     }
 }
