@@ -21,6 +21,15 @@ When run without any arguments the app will use the "defaultFileName" app settin
 
 The app can also be run with n number of file names to solve.
 
+### Project Euler Mode
+When given the -p flag the app will run in Project Euler Mode.
+
+For reference: https://projecteuler.net/problem=96
+
+The second argument will need to be the name of a file which has the same format as: https://projecteuler.net/project/resources/p096_sudoku.txt
+
+The app will then print to the console the solution to each puzzle in the file and whether the solution is valid.
+
 ## Algorithms
 
 ### Implemented
