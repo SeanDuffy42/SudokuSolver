@@ -38,8 +38,7 @@ namespace SudukoSolverLib
                 searchGrid.basicSearch(grid);
                 searchGrid.hiddenSinglesSearch(grid);
                 searchGrid.nondrantSearch(grid);
-                searchGrid.checkForNakedPairs(grid);
-                searchGrid.checkForNakedTriples(grid);
+                searchGrid.checkForNakedPairsAndTriples(grid);
 
                 Done = isSolved(grid) || numOfOptions == numberOfOptions(grid);
             }

@@ -66,15 +66,7 @@ namespace SudukoSolverLib.Search
 
         public bool findRowHiddenSigles(List<HashSet<int>> row)
         {
-            var rowNeeds = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-
-            foreach (var col in row)
-            {
-                if (col.Count == 1)
-                {
-                    rowNeeds.Remove(col.Single());
-                }
-            }
+            var rowNeeds = GetRowNeeds(row);
 
             foreach (var need in rowNeeds)
             {
@@ -94,7 +86,6 @@ namespace SudukoSolverLib.Search
                     placesWeCouldPutNeed.Single().Add(need);
                 }
             }
-
 
             return true;
         }
@@ -189,41 +180,19 @@ namespace SudukoSolverLib.Search
             return rowContains(pivotedColumn, value);
         }
 
-        public bool checkForNakedPairs(List<List<HashSet<int>>> grid)
-        {
-            for (var x = 0; x < grid.Count; x++)
-            {
-                for (var y = 0; y < grid[x].Count; y++)
-                {
-                    if (grid[x][y].Count == 2)
-                    {
-                        removeRowNakedPairOptions(grid[x], grid[x][y]);
-
-                        var pivotedColumn = pivotColumn(grid, y);
-
-                        removeRowNakedPairOptions(pivotedColumn, grid[x][y]);
-
-                        var flatNondrant = flattenNondrant(grid, x, y);
-
-                        removeRowNakedPairOptions(flatNondrant, grid[x][y]);
-                    }
-                }
-            }
-
-            return true;
-        }
-
-        public bool checkForNakedTriples(List<List<HashSet<int>>> grid)
+        public bool checkForNakedPairsAndTriples(List<List<HashSet<int>>> grid)
         {
             foreach (var row in grid)
             {
-                removeRowNakedTriples(row);
+                removeRowNakeds(row, 2);
+                removeRowNakeds(row, 3);
             }
 
             for (var columnIndex = 0; columnIndex < grid.First().Count; columnIndex++)
             {
                 var pivotedColumn = pivotColumn(grid, columnIndex);
-                removeRowNakedTriples(pivotedColumn);
+                removeRowNakeds(pivotedColumn, 2);
+                removeRowNakeds(pivotedColumn, 3);
             }
 
             for (var x = 0; x < 3; x++)
@@ -231,7 +200,8 @@ namespace SudukoSolverLib.Search
                 for(var y = 0; y < 3; y++)
                 {
                     var flatNondrant = flattenNondrant(grid, x, y);
-                    removeRowNakedTriples(flatNondrant);
+                    removeRowNakeds(flatNondrant, 2);
+                    removeRowNakeds(flatNondrant, 3);
                 }
             }
 
@@ -268,11 +238,11 @@ namespace SudukoSolverLib.Search
             return pivotedColumn;
         }
 
-        public void removeRowNakedTriples(List<HashSet<int>> row)
+        public void removeRowNakeds(List<HashSet<int>> row, int n)
         {
             foreach (var checkCol in row)
             {
-                if (checkCol.Count == 3 && howManySubsets(row, checkCol) == 3)
+                if (checkCol.Count == n && howManySubsets(row, checkCol) == n)
                 {
                     foreach (var removeCol in row.Where(c => !c.IsSubsetOf(checkCol)))
                     {
@@ -300,24 +270,6 @@ namespace SudukoSolverLib.Search
             return result;
         }
 
-        public virtual void removeRowNakedPairOptions(List<HashSet<int>> row, HashSet<int> pair)
-        {
-            var foundRowPair = false;
-
-            foundRowPair = row.Where(col => col.SetEquals(pair)).Count() == 2;
-
-            if (foundRowPair)
-            {
-                foreach (var col in row.Where(g => !g.SetEquals(pair)))
-                {
-                    foreach (var option in pair)
-                    {
-                        col.Remove(option);
-                    }
-                }
-            }
-        }
-
         public bool rowContains(List<HashSet<int>> row, int value)
         {
             foreach (var box in row)
@@ -327,6 +279,21 @@ namespace SudukoSolverLib.Search
             }
 
             return false;
+        }
+
+        public List<int> GetRowNeeds(List<HashSet<int>> row)
+        {
+            var rowNeeds = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            foreach (var col in row)
+            {
+                if (col.Count == 1)
+                {
+                    rowNeeds.Remove(col.Single());
+                }
+            }
+
+            return rowNeeds;
         }
     }
 }
